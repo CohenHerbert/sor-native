@@ -46,16 +46,30 @@ export function useMysqlForms() {
 
   useEffect(() => {
     (async () => {
+      // Check auth first — before the try/catch
+      const { data: sessionData, error: sErr } =
+        await supabase.auth.getSession();
+
+      if (sErr) {
+        console.error("[useMysqlForms] session error:", sErr);
+        setError(sErr.message);
+        setLoading(false);
+        return;
+      }
+
+      const token = sessionData?.session?.access_token;
+
+      // Not logged in → return empty state without error or fetch
+      if (!token) {
+        setData([]);
+        setLoading(false);
+        return;
+      }
+
       try {
-        const { data: sessionData, error: sErr } =
-          await supabase.auth.getSession();
-        if (sErr) throw sErr;
-
-        const token = sessionData?.session?.access_token;
-        if (!token) throw new Error("Not authenticated");
-
         const base = process.env.EXPO_PUBLIC_SUPABASE_URL;
         if (!base) throw new Error("EXPO_PUBLIC_SUPABASE_URL missing");
+
         const endpoint = `${base}/functions/v1/mysql`;
 
         const res = await fetch(endpoint, {
@@ -73,6 +87,7 @@ export function useMysqlForms() {
         const json = ct.includes("application/json")
           ? safeParse(raw)
           : safeParse(raw);
+
         if (!json) throw new Error("Response was not valid JSON");
 
         if (Array.isArray(json)) {
@@ -84,6 +99,7 @@ export function useMysqlForms() {
                 item.status === "waitlisted") &&
               isDateInFuture(item.eventdate),
           );
+
           setData(filtered as MysqlForm[]);
         } else if (Array.isArray((json as any).data)) {
           setData((json as any).data as MysqlForm[]);

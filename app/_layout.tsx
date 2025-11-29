@@ -75,7 +75,7 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: "#111827" },
+          headerStyle: { backgroundColor: "#000000" },
           headerTintColor: "#ffffff",
           headerTitleStyle: { fontWeight: "600" },
         }}

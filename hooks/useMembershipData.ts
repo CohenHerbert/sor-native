@@ -22,15 +22,38 @@ export function useMembershipData() {
 
   useEffect(() => {
     (async () => {
-      try {
-        const { data: sessionData, error: sErr } =
-          await supabase.auth.getSession();
-        if (sErr) throw sErr;
-        const token = sessionData?.session?.access_token;
-        if (!token) throw new Error("Not authenticated");
+      //
+      // 1. Get session BEFORE the try/catch — prevents "not authenticated" noise
+      //
+      const { data: sessionData, error: sErr } =
+        await supabase.auth.getSession();
 
+      // Session retrieval error
+      if (sErr) {
+        console.error("[useMembershipData] session error:", sErr);
+        setError(sErr.message);
+        setLoading(false);
+        return;
+      }
+
+      const token = sessionData?.session?.access_token;
+
+      //
+      // 2. If user not logged in → return empty data, do NOT error
+      //
+      if (!token) {
+        setData([]);
+        setLoading(false);
+        return;
+      }
+
+      //
+      // 3. Token exists → now perform network request inside try/catch
+      //
+      try {
         const base = process.env.EXPO_PUBLIC_SUPABASE_URL;
         if (!base) throw new Error("EXPO_PUBLIC_SUPABASE_URL missing");
+
         const endpoint = `${base}/functions/v1/mysql`;
 
         const res = await fetch(endpoint, {
@@ -38,25 +61,15 @@ export function useMembershipData() {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const ct = res.headers.get("content-type") || "";
+        // const ct = res.headers.get("content-type") || "";
         const raw = await res.text();
 
         if (!res.ok) {
           throw new Error(`HTTP ${res.status}: ${raw}`);
         }
 
-        const json = ct.includes("application/json")
-          ? safeParse(raw)
-          : safeParse(raw);
+        const json = safeParse(raw);
         if (!json) throw new Error("Response was not valid JSON");
-
-        const toMembershipRecord = (item: any): MembershipRecord => ({
-          memberstatus: item.memberstatus ?? null,
-          expirationdate: item.expirationdate ?? null,
-          autorenew: item.autorenew ?? null,
-          levelname: item.levelname ?? null,
-          memberid: item.memberid ?? null,
-        });
 
         const extractArray = (j: any) => {
           if (Array.isArray(j)) return j;
@@ -75,6 +88,14 @@ export function useMembershipData() {
             item.end_time == null;
           return hasMemberId && noWorkshopData;
         };
+
+        const toMembershipRecord = (item: any): MembershipRecord => ({
+          memberstatus: item.memberstatus ?? null,
+          expirationdate: item.expirationdate ?? null,
+          autorenew: item.autorenew ?? null,
+          levelname: item.levelname ?? null,
+          memberid: item.memberid ?? null,
+        });
 
         const arr = extractArray(json);
         const membershipRows = arr
