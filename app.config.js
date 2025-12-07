@@ -20,15 +20,13 @@ export default {
     android: {
       package: 'com.sorapp.android',
       icon: './assets/images/android-icon.png',
-
-      versionCode: 2,
+      versionCode: 5,
     },
 
     ios: {
       bundleIdentifier: 'com.sorapp.ios',
       icon: './assets/images/ios-icon.png',
-
-      buildNumber: '2',
+      buildNumber: '4',
     },
 
     extra: {
