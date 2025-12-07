@@ -49,6 +49,60 @@ const labelFromMysql = (f: MysqlForm) => {
   return null;
 };
 
+// Test Data
+// const testForms: MysqlForm[] = [
+//   {
+//     status: "pre-registered",
+//     formid: 3,
+//     eventdate: null,
+//     prereg: "Off",
+//     tld: "org",
+//     workshop_name: "Ranching 101",
+//     webpage_url: "https://schoolofranch.org/workshops/ranching-101",
+//     start_time: "08:00:00",
+//     end_time: "17:00:00",
+//     memberstatus: null,
+//     expirationdate: null,
+//     autorenew: null,
+//     levelname: null,
+//     memberid: null,
+//     _tickets: undefined,
+//     resolved_url:
+//       "https://schoolofranch.org/workshops/ranching-101/details?ref=app",
+//     resolved_reason: undefined,
+//   },
+//   {
+//     status: "completed",
+//     formid: 5,
+//     eventdate: "2024-09-15",
+//     prereg: "Off",
+//     tld: "org",
+//     workshop_name: "Advanced Horsemanship",
+//     webpage_url: "https://schoolofranch.org/workshops/advanced-horsemanship",
+//     start_time: "09:00:00",
+//     end_time: "16:00:00",
+//     memberstatus: null,
+//     expirationdate: null,
+//     autorenew: null,
+//     levelname: null,
+//     memberid: null,
+//     _tickets: undefined,
+//     resolved_url:
+//       "https://schoolofranch.org/workshops/advanced-horsemanship/details?ref=app",
+//     resolved_reason: undefined,
+//   },
+// ];
+
+// const testMembershipData: MembershipRecord[] = [
+//   {
+//     memberid: 12345,
+//     memberstatus: "Active",
+//     expirationdate: "2025-06-30",
+//     autorenew: 1,
+//     levelname: "Gold",
+//   },
+// ];
+
 export default function DashboardScreen() {
   const [email, setEmail] = useState<string | null>(null);
 
@@ -62,6 +116,9 @@ export default function DashboardScreen() {
     isLoading: membershipLoading,
     error: membershipError,
   } = useMembershipData();
+
+  // const mysqlForms = testForms; // For testing without data
+  // const membershipData = testMembershipData; // For testing without data
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -89,7 +146,7 @@ export default function DashboardScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.logoText}>School of Ranch</Text>
+      {/* <Text style={styles.logoText}>School of Ranch</Text> */}
 
       {/* Workshops */}
       <View style={styles.sectionHeader}>
@@ -99,7 +156,7 @@ export default function DashboardScreen() {
         </Text>
       </View>
 
-      <View style={styles.cardContainer}>
+      <View style={styles.card}>
         {mysqlLoading && (
           <View style={styles.card}>
             <Text>Loading your workshops…</Text>
@@ -121,7 +178,7 @@ export default function DashboardScreen() {
         {!mysqlLoading && !mysqlError && groupedForms.length > 0 && (
           <>
             {groupedForms.map((f) => (
-              <View key={f.formid} style={styles.card}>
+              <View key={f.formid} style={styles.subCard}>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.workshopTitle}>{f.workshop_name}</Text>
                   {labelFromMysql(f) && (
@@ -141,18 +198,18 @@ export default function DashboardScreen() {
                 ) : null}
               </View>
             ))}
-
-            <Pressable
-              style={[styles.primaryButton, { alignSelf: "flex-end", marginTop: 8 }]}
-              onPress={() =>
-                Linking.openURL("https://schoolofranch.org/calendar")
-              }
-            >
-              <Text style={styles.primaryButtonText}>View All</Text>
-            </Pressable>
           </>
         )}
       </View>
+
+      <Pressable
+        style={[styles.primaryButton, { alignSelf: "flex-end" }]}
+        onPress={() =>
+          Linking.openURL("https://schoolofranch.org/calendar")
+        }
+      >
+        <Text style={styles.primaryButtonText}>View All</Text>
+      </Pressable>
 
       {/* Membership */}
       <View style={styles.sectionHeader}>
@@ -196,10 +253,17 @@ export default function DashboardScreen() {
         </View>
       </View>
 
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>School of Ranch App</Text>
+        <Text style={styles.sectionSubtitle}>
+          Tricks, tips, and more.
+        </Text>
+      </View>
+
       {/* Contact + ID + Logout */}
       <View style={styles.cardContainer}>
         <View style={styles.card}>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View style={[styles.subCard, { flexDirection: "row", alignItems: "center" }]}>
             <Text style={{ flex: 1 }}>Contact School of Ranch</Text>
             <Pressable
               style={styles.primaryButton}
@@ -211,10 +275,10 @@ export default function DashboardScreen() {
         </View>
 
         <View style={styles.card}>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View style={[styles.subCard, { flexDirection: "row", alignItems: "center" }]}>
             <Text style={{ flex: 1 }}>ID: {email ?? "Loading…"}</Text>
-            <Pressable style={styles.dangerButton} onPress={handleLogout}>
-              <Text style={styles.dangerButtonText}>Logout</Text>
+            <Pressable style={styles.primaryButton} onPress={handleLogout}>
+              <Text style={styles.primaryButtonText}>Logout</Text>
             </Pressable>
           </View>
         </View>
@@ -261,7 +325,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "700",
     textAlign: "center",
-    marginBottom: 24,
+    marginTop: 14,
+    marginBottom: 12,
   },
   sectionHeader: {
     marginBottom: 8,
@@ -275,47 +340,66 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#4b5563",
   },
+
+  // NEW: wrapper equivalent to .workshop-container
+  card: {
+    backgroundColor: "#f3f4f6", // Tailwind gray-100
+    padding: 8,
+    borderRadius: 16, // 1rem
+    marginBottom: 16,
+    display: "flex",
+    gap: 8,
+  },
+
+  subCard: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+
+    borderRadius: 12,
+    backgroundColor: "#ffffff",
+    padding: 12,
+  },
+
   cardContainer: {
     marginBottom: 16,
   },
-  card: {
-    borderRadius: 12,
-    backgroundColor: "#f9fafb",
-    padding: 16,
-    marginBottom: 8,
+
+  // NEW: helper for left column (flex flex-col gap-1)
+  workshopContent: {
+    flex: 1,
+    marginRight: 12,
   },
+
+  // Match h2
   workshopTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 4, // gap-1
+  },
+
+  // Match p (16px, semi-bold, subtle color)
+  workshopMeta: {
     fontSize: 16,
     fontWeight: "600",
-    marginBottom: 4,
+    color: "#687888",
   },
-  workshopMeta: {
-    fontSize: 14,
-    color: "#4b5563",
-  },
+
+  // Primary button like Button variant="primary"
   primaryButton: {
-    backgroundColor: "#2563eb",
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 999,
+    backgroundColor: "#2b7fff",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12, // pill-like
   },
   primaryButtonText: {
     color: "#ffffff",
     fontWeight: "600",
     fontSize: 14,
   },
-  dangerButton: {
-    backgroundColor: "#b91c1c",
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 999,
-  },
-  dangerButtonText: {
-    color: "#ffffff",
-    fontWeight: "600",
-    fontSize: 14,
-  },
+
   membershipCard: {
+    width: "100%",
     borderRadius: 12,
     backgroundColor: "#ffffff",
     overflow: "hidden",
@@ -338,3 +422,4 @@ const styles = StyleSheet.create({
     color: "#111827",
   },
 });
+

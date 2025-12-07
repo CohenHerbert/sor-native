@@ -374,14 +374,14 @@ const styles = StyleSheet.create({
     padding: 24,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#020617",
+    backgroundColor: "#ffffffff",
   },
   card: {
     width: "100%",
     maxWidth: 360,
     padding: 20,
     borderRadius: 12,
-    backgroundColor: "#f9fafb",
+    backgroundColor: "#f1f1f1ff",
   },
   title: {
     fontSize: 20,
@@ -430,7 +430,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   primaryButton: {
-    backgroundColor: "#1d4ed8",
+    backgroundColor: "#2b7fff",
     paddingVertical: 10,
     borderRadius: 8,
     alignItems: "center",

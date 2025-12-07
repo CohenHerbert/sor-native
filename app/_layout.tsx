@@ -2,7 +2,7 @@ import type { Session } from "@supabase/supabase-js";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import { supabase } from "../lib/supabase";
 
 const queryClient = new QueryClient({
@@ -33,10 +33,20 @@ function useAuthRouting(session: Session | null | undefined) {
   }, [session, segments, router]);
 }
 
-export default function RootLayout() {
-  const [session, setSession] = useState<Session | null | undefined>(
-    undefined,
+function BackButton() {
+  const router = useRouter();
+  return (
+    <Pressable
+      onPress={() => router.back()}
+      style={{ paddingHorizontal: 12 }}
+    >
+      <Text style={{ color: "#ffffff" }}>Back</Text>
+    </Pressable>
   );
+}
+
+export default function RootLayout() {
+  const [session, setSession] = useState<Session | null | undefined>(undefined);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -63,7 +73,7 @@ export default function RootLayout() {
           flex: 1,
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "#020617",
+          backgroundColor: "#ecececff",
         }}
       >
         <ActivityIndicator />
@@ -75,11 +85,28 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: "#000000" },
-          headerTintColor: "#ffffff",
+          headerStyle: { backgroundColor: "#ffffffff" },
+          headerTintColor: "#000000ff",
           headerTitleStyle: { fontWeight: "600" },
         }}
-      />
+      >
+        {/* No back button on home */}
+        <Stack.Screen
+          name="index"
+          options={{
+            title: "School of Ranch",
+            headerLeft: () => null,
+          }}
+        />
+
+        {/* Example: auth screens with no back button */}
+        <Stack.Screen
+          name="auth/index"
+          options={{
+            headerShown: false,
+          }}
+        />
+      </Stack>
     </QueryClientProvider>
   );
 }

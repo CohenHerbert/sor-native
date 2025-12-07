@@ -5,12 +5,30 @@ export default {
     name: 'School of Ranch',
     slug: 'school-of-ranch',
 
+    scheme: 'sor',
+
+    icon: './assets/images/ios-icon.png',
+
+    splash: {
+      image: './assets/images/ios-icon.png',
+      resizeMode: 'contain',
+      backgroundColor: '#ffffff',
+    },
+
+    version: '1.0.1',
+
     android: {
       package: 'com.sorapp.android',
+      icon: './assets/images/android-icon.png',
+
+      versionCode: 2,
     },
 
     ios: {
       bundleIdentifier: 'com.sorapp.ios',
+      icon: './assets/images/ios-icon.png',
+
+      buildNumber: '2',
     },
 
     extra: {
