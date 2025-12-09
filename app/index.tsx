@@ -9,10 +9,9 @@ import {
   View,
 } from "react-native";
 import {
-  useMembershipData,
-  type MembershipRecord,
+  type MembershipRecord
 } from "../hooks/useMembershipData";
-import { useMysqlForms, type MysqlForm } from "../hooks/useMysqlForms";
+import { type MysqlForm } from "../hooks/useMysqlForms";
 import { supabase } from "../lib/supabase";
 
 const MONTH_ABBREVIATIONS = [
@@ -50,75 +49,79 @@ const labelFromMysql = (f: MysqlForm) => {
 };
 
 // Test Data
-// const testForms: MysqlForm[] = [
-//   {
-//     status: "pre-registered",
-//     formid: 3,
-//     eventdate: null,
-//     prereg: "Off",
-//     tld: "org",
-//     workshop_name: "Ranching 101",
-//     webpage_url: "https://schoolofranch.org/workshops/ranching-101",
-//     start_time: "08:00:00",
-//     end_time: "17:00:00",
-//     memberstatus: null,
-//     expirationdate: null,
-//     autorenew: null,
-//     levelname: null,
-//     memberid: null,
-//     _tickets: undefined,
-//     resolved_url:
-//       "https://schoolofranch.org/workshops/ranching-101/details?ref=app",
-//     resolved_reason: undefined,
-//   },
-//   {
-//     status: "completed",
-//     formid: 5,
-//     eventdate: "2024-09-15",
-//     prereg: "Off",
-//     tld: "org",
-//     workshop_name: "Advanced Horsemanship",
-//     webpage_url: "https://schoolofranch.org/workshops/advanced-horsemanship",
-//     start_time: "09:00:00",
-//     end_time: "16:00:00",
-//     memberstatus: null,
-//     expirationdate: null,
-//     autorenew: null,
-//     levelname: null,
-//     memberid: null,
-//     _tickets: undefined,
-//     resolved_url:
-//       "https://schoolofranch.org/workshops/advanced-horsemanship/details?ref=app",
-//     resolved_reason: undefined,
-//   },
-// ];
+const testForms: MysqlForm[] = [
+  {
+    status: "pre-registered",
+    formid: 3,
+    eventdate: null,
+    prereg: "Off",
+    tld: "org",
+    workshop_name: "Ranching 101",
+    webpage_url: "https://schoolofranch.org/workshops/ranching-101",
+    start_time: "08:00:00",
+    end_time: "17:00:00",
+    memberstatus: null,
+    expirationdate: null,
+    autorenew: null,
+    levelname: null,
+    memberid: null,
+    _tickets: undefined,
+    resolved_url:
+      "https://schoolofranch.org/workshops/ranching-101/details?ref=app",
+    resolved_reason: undefined,
+  },
+  {
+    status: "completed",
+    formid: 5,
+    eventdate: "2024-09-15",
+    prereg: "Off",
+    tld: "org",
+    workshop_name: "Advanced Horsemanship",
+    webpage_url: "https://schoolofranch.org/workshops/advanced-horsemanship",
+    start_time: "09:00:00",
+    end_time: "16:00:00",
+    memberstatus: null,
+    expirationdate: null,
+    autorenew: null,
+    levelname: null,
+    memberid: null,
+    _tickets: undefined,
+    resolved_url:
+      "https://schoolofranch.org/workshops/advanced-horsemanship/details?ref=app",
+    resolved_reason: undefined,
+  },
+];
 
-// const testMembershipData: MembershipRecord[] = [
-//   {
-//     memberid: 12345,
-//     memberstatus: "Active",
-//     expirationdate: "2025-06-30",
-//     autorenew: 1,
-//     levelname: "Gold",
-//   },
-// ];
+const testMembershipData: MembershipRecord[] = [
+  {
+    memberid: 12345,
+    memberstatus: "Active",
+    expirationdate: "2025-06-30",
+    autorenew: 1,
+    levelname: "Gold",
+  },
+];
 
 export default function DashboardScreen() {
   const [email, setEmail] = useState<string | null>(null);
 
-  const {
-    data: mysqlForms,
-    isLoading: mysqlLoading,
-    error: mysqlError,
-  } = useMysqlForms();
-  const {
-    data: membershipData,
-    isLoading: membershipLoading,
-    error: membershipError,
-  } = useMembershipData();
+  // const {
+  //   data: mysqlForms,
+  //   isLoading: mysqlLoading,
+  //   error: mysqlError,
+  // } = useMysqlForms();
+  // const {
+  //   data: membershipData,
+  //   isLoading: membershipLoading,
+  //   error: membershipError,
+  // } = useMembershipData();
 
-  // const mysqlForms = testForms; // For testing without data
-  // const membershipData = testMembershipData; // For testing without data
+  const mysqlForms = testForms; // For testing without data
+  const mysqlLoading = false;
+  const mysqlError = null;
+  const membershipData = testMembershipData; // For testing without data
+  const membershipLoading = false;
+  const membershipError = null;
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -158,19 +161,19 @@ export default function DashboardScreen() {
 
       <View style={styles.card}>
         {mysqlLoading && (
-          <View style={styles.card}>
+          <View style={styles.subCard}>
             <Text>Loading your workshops…</Text>
           </View>
         )}
 
         {!mysqlLoading && mysqlError && (
-          <View style={styles.card}>
+          <View style={styles.subCard}>
             <Text>Failed to load workshops: {mysqlError}</Text>
           </View>
         )}
 
         {!mysqlLoading && !mysqlError && groupedForms.length === 0 && (
-          <View style={styles.card}>
+          <View style={styles.subCard}>
             <Text>No workshops yet.</Text>
           </View>
         )}
@@ -221,28 +224,36 @@ export default function DashboardScreen() {
 
       <View style={styles.cardContainer}>
         <View style={styles.card}>
-          {membershipLoading && <Text>Loading your membership data…</Text>}
+          {membershipLoading && (
+            <div style={styles.subCard}>
+              <Text>Loading your membership data…</Text>
+            </div>
+          )}
 
           {!membershipLoading && membershipError && (
-            <Text>Failed to load membership: {membershipError}</Text>
+            <div style={styles.subCard}>
+              <Text>Failed to load membership: {membershipError}</Text>
+            </div>
           )}
 
           {!membershipLoading &&
             !membershipError &&
             membershipData.length === 0 && (
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Text style={{ flex: 1 }}>
-                  Join and earn up to 20% off all workshops for a year!
-                </Text>
-                <Pressable
-                  style={styles.primaryButton}
-                  onPress={() =>
-                    Linking.openURL("https://schoolofranch.org/join")
-                  }
-                >
-                  <Text style={styles.primaryButtonText}>Join</Text>
-                </Pressable>
-              </View>
+              <div style={styles.subCard}>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Text style={{ flex: 1 }}>
+                    Join and earn up to 20% off all workshops for a year!
+                  </Text>
+                  <Pressable
+                    style={styles.primaryButton}
+                    onPress={() =>
+                      Linking.openURL("https://schoolofranch.org/join")
+                    }
+                  >
+                    <Text style={styles.primaryButtonText}>Join</Text>
+                  </Pressable>
+                </View>
+              </div>
             )}
 
           {!membershipLoading &&
