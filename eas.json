@@ -5,7 +5,13 @@
   },
   "build": {
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "autoIncrement": false
+    },
+    "production": {
+      "android": {
+        "buildType": "app-bundle"
+      }
     }
   },
   "submit": {
