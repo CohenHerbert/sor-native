@@ -88,6 +88,7 @@ export default function RootLayout() {
           headerStyle: { backgroundColor: "#ffffffff" },
           headerTintColor: "#000000ff",
           headerTitleStyle: { fontWeight: "600" },
+          contentStyle: { backgroundColor: "#ffffffff" },
         }}
       >
         {/* No back button on home */}
@@ -96,6 +97,7 @@ export default function RootLayout() {
           options={{
             title: "School of Ranch",
             headerLeft: () => null,
+            headerShown: false,
           }}
         />
 

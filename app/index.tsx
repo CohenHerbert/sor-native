@@ -1,6 +1,7 @@
 // app/index.tsx
 import { useEffect, useMemo, useState } from "react";
 import {
+  Image,
   Linking,
   Pressable,
   ScrollView,
@@ -8,6 +9,7 @@ import {
   Text,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   type MembershipRecord
 } from "../hooks/useMembershipData";
@@ -148,98 +150,105 @@ export default function DashboardScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {/* <Text style={styles.logoText}>School of Ranch</Text> */}
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* <Text style={styles.logoText}>School of Ranch</Text> */}
 
-      {/* Workshops */}
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Your Workshops</Text>
-        <Text style={styles.sectionSubtitle}>
-          Current registrations for your account.
-        </Text>
-      </View>
+        <Image
+          source={require("../assets/images/logo-full.png")}
+          style={{ width: 332, height: 100, alignSelf: "center" }}
+        />
 
-      <View style={styles.card}>
-        {mysqlLoading && (
-          <View style={styles.subCard}>
-            <Text>Loading your workshops…</Text>
+        {/* Workshops */}
+        <View style={[{ display: "flex", flexDirection: "row", justifyContent: "space-between" }]}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Your Workshops</Text>
+            <Text style={styles.sectionSubtitle}>
+              Current registrations for your account.
+            </Text>
           </View>
-        )}
 
-        {!mysqlLoading && mysqlError && (
-          <View style={styles.subCard}>
-            <Text>Failed to load workshops: {mysqlError}</Text>
-          </View>
-        )}
+          <Pressable
+            style={[styles.primaryButton, { alignSelf: "flex-end", marginBottom: 16 }]}
+            onPress={() =>
+              Linking.openURL("https://schoolofranch.org/calendar")
+            }
+          >
+            <Text style={styles.primaryButtonText}>View All</Text>
+          </Pressable>
+        </View>
 
-        {!mysqlLoading && !mysqlError && groupedForms.length === 0 && (
-          <View style={styles.subCard}>
-            <Text>No workshops yet.</Text>
-          </View>
-        )}
+        <View style={styles.card}>
+          {mysqlLoading && (
+            <View style={styles.subCard}>
+              <Text>Loading your workshops…</Text>
+            </View>
+          )}
 
-        {!mysqlLoading && !mysqlError && groupedForms.length > 0 && (
-          <>
-            {groupedForms.map((f) => (
-              <View key={f.formid} style={styles.subCard}>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.workshopTitle}>{f.workshop_name}</Text>
-                  {labelFromMysql(f) && (
-                    <Text style={styles.workshopMeta}>
-                      {labelFromMysql(f)} | {f._tickets ?? 1} Tickets
-                    </Text>
-                  )}
+          {!mysqlLoading && mysqlError && (
+            <View style={styles.subCard}>
+              <Text>Failed to load workshops: {mysqlError}</Text>
+            </View>
+          )}
+
+          {!mysqlLoading && !mysqlError && groupedForms.length === 0 && (
+            <View style={styles.subCard}>
+              <Text>No workshops yet.</Text>
+            </View>
+          )}
+
+          {!mysqlLoading && !mysqlError && groupedForms.length > 0 && (
+            <>
+              {groupedForms.map((f) => (
+                <View key={f.formid} style={styles.subCard}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.workshopTitle}>{f.workshop_name}</Text>
+                    {labelFromMysql(f) && (
+                      <Text style={styles.workshopMeta}>
+                        {labelFromMysql(f)} | {f._tickets ?? 1} Ticket(s)
+                      </Text>
+                    )}
+                  </View>
+
+                  {f.resolved_url ? (
+                    <Pressable
+                      style={styles.primaryButton}
+                      onPress={() => Linking.openURL(f.resolved_url!)}
+                    >
+                      <Text style={styles.primaryButtonText}>Details</Text>
+                    </Pressable>
+                  ) : null}
                 </View>
+              ))}
+            </>
+          )}
+        </View>
 
-                {f.resolved_url ? (
-                  <Pressable
-                    style={styles.primaryButton}
-                    onPress={() => Linking.openURL(f.resolved_url!)}
-                  >
-                    <Text style={styles.primaryButtonText}>Details</Text>
-                  </Pressable>
-                ) : null}
-              </View>
-            ))}
-          </>
-        )}
-      </View>
+        {/* Membership */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Membership</Text>
+          <Text style={styles.sectionSubtitle}>
+            Memberships earn discounts and benefits.
+          </Text>
+        </View>
 
-      <Pressable
-        style={[styles.primaryButton, { alignSelf: "flex-end" }]}
-        onPress={() =>
-          Linking.openURL("https://schoolofranch.org/calendar")
-        }
-      >
-        <Text style={styles.primaryButtonText}>View All</Text>
-      </Pressable>
-
-      {/* Membership */}
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Membership</Text>
-        <Text style={styles.sectionSubtitle}>
-          Memberships earn discounts and benefits.
-        </Text>
-      </View>
-
-      <View style={styles.cardContainer}>
         <View style={styles.card}>
           {membershipLoading && (
-            <div style={styles.subCard}>
+            <View style={styles.subCard}>
               <Text>Loading your membership data…</Text>
-            </div>
+            </View>
           )}
 
           {!membershipLoading && membershipError && (
-            <div style={styles.subCard}>
+            <View style={styles.subCard}>
               <Text>Failed to load membership: {membershipError}</Text>
-            </div>
+            </View>
           )}
 
           {!membershipLoading &&
             !membershipError &&
             membershipData.length === 0 && (
-              <div style={styles.subCard}>
+              <View style={styles.subCard}>
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <Text style={{ flex: 1 }}>
                     Join and earn up to 20% off all workshops for a year!
@@ -253,7 +262,7 @@ export default function DashboardScreen() {
                     <Text style={styles.primaryButtonText}>Join</Text>
                   </Pressable>
                 </View>
-              </div>
+              </View>
             )}
 
           {!membershipLoading &&
@@ -262,39 +271,39 @@ export default function DashboardScreen() {
               <MembershipCard membership={membershipData[0]} />
             )}
         </View>
-      </View>
 
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>School of Ranch App</Text>
-        <Text style={styles.sectionSubtitle}>
-          Tricks, tips, and more.
-        </Text>
-      </View>
-
-      {/* Contact + ID + Logout */}
-      <View style={styles.cardContainer}>
-        <View style={styles.card}>
-          <View style={[styles.subCard, { flexDirection: "row", alignItems: "center" }]}>
-            <Text style={{ flex: 1 }}>Contact School of Ranch</Text>
-            <Pressable
-              style={styles.primaryButton}
-              onPress={() => Linking.openURL("mailto:info@schoolofranch.org")}
-            >
-              <Text style={styles.primaryButtonText}>Go</Text>
-            </Pressable>
-          </View>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>School of Ranch App</Text>
+          <Text style={styles.sectionSubtitle}>
+            Tricks, tips, and more.
+          </Text>
         </View>
 
-        <View style={styles.card}>
-          <View style={[styles.subCard, { flexDirection: "row", alignItems: "center" }]}>
-            <Text style={{ flex: 1 }}>ID: {email ?? "Loading…"}</Text>
-            <Pressable style={styles.primaryButton} onPress={handleLogout}>
-              <Text style={styles.primaryButtonText}>Logout</Text>
-            </Pressable>
+        {/* Contact + ID + Logout */}
+        <View style={styles.cardContainer}>
+          <View style={styles.card}>
+            <View style={[styles.subCard, { flexDirection: "row", alignItems: "center" }]}>
+              <Text style={{ flex: 1 }}>Contact School of Ranch</Text>
+              <Pressable
+                style={styles.primaryButton}
+                onPress={() => Linking.openURL("mailto:info@schoolofranch.org")}
+              >
+                <Text style={styles.primaryButtonText}>Go</Text>
+              </Pressable>
+            </View>
+          </View>
+
+          <View style={styles.card}>
+            <View style={[styles.subCard, { flexDirection: "row", alignItems: "center" }]}>
+              <Text style={{ flex: 1 }}>ID: {email ?? "Loading…"}</Text>
+              <Pressable style={styles.primaryButton} onPress={handleLogout}>
+                <Text style={styles.primaryButtonText}>Logout</Text>
+              </Pressable>
+            </View>
           </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -330,7 +339,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 24,
     paddingBottom: 32,
-    backgroundColor: "#ffffff",
+    // backgroundColor: "#ffffff",
   },
   logoText: {
     fontSize: 24,
@@ -352,7 +361,6 @@ const styles = StyleSheet.create({
     color: "#4b5563",
   },
 
-  // NEW: wrapper equivalent to .workshop-container
   card: {
     backgroundColor: "#f3f4f6", // Tailwind gray-100
     padding: 8,
@@ -376,27 +384,23 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 
-  // NEW: helper for left column (flex flex-col gap-1)
   workshopContent: {
     flex: 1,
     marginRight: 12,
   },
 
-  // Match h2
   workshopTitle: {
     fontSize: 18,
     fontWeight: "600",
-    marginBottom: 4, // gap-1
+    marginBottom: 4,
   },
 
-  // Match p (16px, semi-bold, subtle color)
   workshopMeta: {
     fontSize: 16,
     fontWeight: "600",
     color: "#687888",
   },
 
-  // Primary button like Button variant="primary"
   primaryButton: {
     backgroundColor: "#2b7fff",
     paddingHorizontal: 12,
