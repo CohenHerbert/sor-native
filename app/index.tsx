@@ -1,4 +1,3 @@
-// app/index.tsx
 import { useEffect, useMemo, useState } from "react";
 import {
   Image,
@@ -15,6 +14,7 @@ import {
 } from "../hooks/useMembershipData";
 import { type MysqlForm } from "../hooks/useMysqlForms";
 import { supabase } from "../lib/supabase";
+import { openLink } from "../utils/openLink";
 
 const MONTH_ABBREVIATIONS = [
   "Jan.",
@@ -50,7 +50,7 @@ const labelFromMysql = (f: MysqlForm) => {
   return null;
 };
 
-// Test Data
+// Testing Data
 const testForms: MysqlForm[] = [
   {
     status: "pre-registered",
@@ -118,10 +118,11 @@ export default function DashboardScreen() {
   //   error: membershipError,
   // } = useMembershipData();
 
-  const mysqlForms = testForms; // For testing without data
+  // Testing data
+  const mysqlForms = testForms;
   const mysqlLoading = false;
   const mysqlError = null;
-  const membershipData = testMembershipData; // For testing without data
+  const membershipData = testMembershipData;
   const membershipLoading = false;
   const membershipError = null;
 
@@ -146,23 +147,20 @@ export default function DashboardScreen() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    // _layout.tsx will see session=null and push to /auth
   };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.container}>
-        {/* <Text style={styles.logoText}>School of Ranch</Text> */}
-
         <Image
           source={require("../assets/images/logo-full.png")}
-          style={{ width: 332, height: 100, alignSelf: "center" }}
+          style={{ width: 332, height: 100, alignSelf: "center", paddingBottom: 12 }}
         />
 
         {/* Workshops */}
         <View style={[{ display: "flex", flexDirection: "row", justifyContent: "space-between" }]}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Your Workshops</Text>
+            <Text style={styles.sectionTitle}>YOUR WORKSHOPS</Text>
             <Text style={styles.sectionSubtitle}>
               Current registrations for your account.
             </Text>
@@ -171,7 +169,7 @@ export default function DashboardScreen() {
           <Pressable
             style={[styles.primaryButton, { alignSelf: "flex-end", marginBottom: 16 }]}
             onPress={() =>
-              Linking.openURL("https://schoolofranch.org/calendar")
+              openLink("https://schoolofranch.org/calendar")
             }
           >
             <Text style={styles.primaryButtonText}>View All</Text>
@@ -226,7 +224,7 @@ export default function DashboardScreen() {
 
         {/* Membership */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Membership</Text>
+          <Text style={styles.sectionTitle}>MEMBERSHIP</Text>
           <Text style={styles.sectionSubtitle}>
             Memberships earn discounts and benefits.
           </Text>
@@ -273,13 +271,13 @@ export default function DashboardScreen() {
         </View>
 
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>School of Ranch App</Text>
+          <Text style={styles.sectionTitle}>OTHER STUFF</Text>
           <Text style={styles.sectionSubtitle}>
             Tricks, tips, and more.
           </Text>
         </View>
 
-        {/* Contact + ID + Logout */}
+        {/* Other stuff */}
         <View style={styles.cardContainer}>
           <View style={styles.card}>
             <View style={[styles.subCard, { flexDirection: "row", alignItems: "center" }]}>
@@ -293,14 +291,9 @@ export default function DashboardScreen() {
             </View>
           </View>
 
-          <View style={styles.card}>
-            <View style={[styles.subCard, { flexDirection: "row", alignItems: "center" }]}>
-              <Text style={{ flex: 1 }}>ID: {email ?? "Loading…"}</Text>
-              <Pressable style={styles.primaryButton} onPress={handleLogout}>
-                <Text style={styles.primaryButtonText}>Logout</Text>
-              </Pressable>
-            </View>
-          </View>
+          <Pressable style={[styles.destructiveButton, { alignSelf: "flex-end" }]} onPress={handleLogout}>
+            <Text style={styles.primaryButtonText}>Logout</Text>
+          </Pressable>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -338,15 +331,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 24,
-    paddingBottom: 32,
-    // backgroundColor: "#ffffff",
-  },
-  logoText: {
-    fontSize: 24,
-    fontWeight: "700",
-    textAlign: "center",
-    marginTop: 14,
-    marginBottom: 12,
+    paddingVertical: 12,
   },
   sectionHeader: {
     marginBottom: 8,
@@ -354,7 +339,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: "700",
+    fontWeight: "500",
   },
   sectionSubtitle: {
     fontSize: 14,
@@ -362,9 +347,9 @@ const styles = StyleSheet.create({
   },
 
   card: {
-    backgroundColor: "#f3f4f6", // Tailwind gray-100
+    backgroundColor: "#f3f4f6",
     padding: 8,
-    borderRadius: 16, // 1rem
+    borderRadius: 16,
     marginBottom: 16,
     display: "flex",
     gap: 8,
@@ -405,14 +390,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#2b7fff",
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 12, // pill-like
+    borderRadius: 12,
   },
   primaryButtonText: {
     color: "#ffffff",
     fontWeight: "600",
     fontSize: 14,
   },
-
+  destructiveButton: {
+    backgroundColor: "#ef4444",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
   membershipCard: {
     width: "100%",
     borderRadius: 12,
