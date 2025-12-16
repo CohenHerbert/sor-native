@@ -4,36 +4,8 @@
     "appVersionSource": "local"
   },
   "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal",
-      "android": {
-        "autoIncrement": false
-      },
-      "ios": {
-        "autoIncrement": false
-      }
-    },
     "preview": {
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk",
-        "autoIncrement": false
-      },
-      "ios": {
-        "autoIncrement": false
-      }
-    },
-    "production": {
-      "android": {
-        "autoIncrement": false
-      },
-      "ios": {
-        "autoIncrement": false
-      }
+      "distribution": "internal"
     }
-  },
-  "submit": {
-    "production": {}
   }
 }
