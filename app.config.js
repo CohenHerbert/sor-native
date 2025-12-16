@@ -19,7 +19,11 @@ export default {
 
     android: {
       package: 'com.sorapp.android',
-      icon: './assets/images/android-icon.png',
+
+      adaptiveIcon: {
+        foregroundImage: './assets/images/android-icon.png',
+        backgroundColor: '#ffffff',
+      },
     },
 
     ios: {
