@@ -211,7 +211,7 @@ export default function DashboardScreen() {
                   {f.resolved_url ? (
                     <Pressable
                       style={styles.primaryButton}
-                      onPress={() => Linking.openURL(f.resolved_url!)}
+                      onPress={() => openLink(f.resolved_url!)}
                     >
                       <Text style={styles.primaryButtonText}>Details</Text>
                     </Pressable>
@@ -254,7 +254,7 @@ export default function DashboardScreen() {
                   <Pressable
                     style={styles.primaryButton}
                     onPress={() =>
-                      Linking.openURL("https://schoolofranch.org/join")
+                      openLink("https://schoolofranch.org/join")
                     }
                   >
                     <Text style={styles.primaryButtonText}>Join</Text>
@@ -284,7 +284,7 @@ export default function DashboardScreen() {
               <Text style={{ flex: 1 }}>Contact School of Ranch</Text>
               <Pressable
                 style={styles.primaryButton}
-                onPress={() => Linking.openURL("mailto:info@schoolofranch.org")}
+                onPress={() => openLink("mailto:info@schoolofranch.org")}
               >
                 <Text style={styles.primaryButtonText}>Go</Text>
               </Pressable>
