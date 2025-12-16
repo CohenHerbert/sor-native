@@ -7,5 +7,12 @@
     "preview": {
       "distribution": "internal"
     }
+  },
+  "submit": {
+    "internal": {
+      "android": {
+        "track": "internal"
+      }
+    }
   }
 }
