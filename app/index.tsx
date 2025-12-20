@@ -270,6 +270,15 @@ export default function DashboardScreen() {
             )}
         </View>
 
+        <Pressable
+          style={[styles.primaryButton, { alignSelf: "flex-end", marginBottom: 16 }]}
+          onPress={() =>
+            openLink("https://schoolofranch.org/join")
+          }
+        >
+          <Text style={styles.primaryButtonText}>Learn More</Text>
+        </Pressable>
+
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>OTHER STUFF</Text>
           <Text style={styles.sectionSubtitle}>

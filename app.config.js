@@ -15,7 +15,7 @@ export default {
       backgroundColor: '#ffffff',
     },
 
-    version: '1.0.7', // TODO: Update this when releasing a new version
+    version: '1.0.10', // TODO: Update this when releasing a new version
 
     android: {
       package: 'com.sorapp.android',
@@ -24,13 +24,13 @@ export default {
         foregroundImage: './assets/images/android-icon.png',
         backgroundColor: '#ffffff',
       },
-      versionCode: 7, // TODO: Update this when releasing a new version
+      versionCode: 10, // TODO: Update this when releasing a new version
     },
 
     ios: {
       bundleIdentifier: 'com.sorapp.ios',
       icon: './assets/images/ios-icon.png',
-      buildNumber: '7', // TODO: Update this when releasing a new version & must be a string
+      buildNumber: '10', // TODO: Update this when releasing a new version & must be a string
     },
 
     extra: {
