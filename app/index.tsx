@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Image,
-  Linking,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  View,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -158,22 +157,11 @@ export default function DashboardScreen() {
         />
 
         {/* Workshops */}
-        <View style={[{ display: "flex", flexDirection: "row", justifyContent: "space-between" }]}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>YOUR WORKSHOPS</Text>
-            <Text style={styles.sectionSubtitle}>
-              Current registrations for your account.
-            </Text>
-          </View>
-
-          <Pressable
-            style={[styles.primaryButton, { alignSelf: "flex-end", marginBottom: 16 }]}
-            onPress={() =>
-              openLink("https://schoolofranch.org/calendar")
-            }
-          >
-            <Text style={styles.primaryButtonText}>View All</Text>
-          </Pressable>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>MY WORKSHOPS</Text>
+          <Text style={styles.sectionSubtitle}>
+            Current registrations for your account.
+          </Text>
         </View>
 
         <View style={styles.card}>
@@ -222,9 +210,18 @@ export default function DashboardScreen() {
           )}
         </View>
 
+        <Pressable
+          style={[styles.primaryButton, { alignSelf: "flex-end", marginBottom: 16 }]}
+          onPress={() =>
+            openLink("https://schoolofranch.org/calendar")
+          }
+        >
+          <Text style={styles.primaryButtonText}>More Workshops</Text>
+        </Pressable>
+
         {/* Membership */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>MEMBERSHIP</Text>
+          <Text style={styles.sectionTitle}>MY MEMBERSHIP</Text>
           <Text style={styles.sectionSubtitle}>
             Memberships earn discounts and benefits.
           </Text>
