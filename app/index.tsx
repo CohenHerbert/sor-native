@@ -15,21 +15,6 @@ import { type MysqlForm, useMysqlForms } from "../hooks/useMysqlForms";
 import { supabase } from "../lib/supabase";
 import { openLink } from "../utils/openLink";
 
-const MONTH_ABBREVIATIONS = [
-  "Jan.",
-  "Feb.",
-  "Mar.",
-  "Apr.",
-  "May",
-  "Jun.",
-  "Jul.",
-  "Aug.",
-  "Sep.",
-  "Oct.",
-  "Nov.",
-  "Dec.",
-] as const;
-
 const formatWorkshopDate = (value: string | null): string | null => {
   if (!value) return null;
 
