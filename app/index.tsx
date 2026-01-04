@@ -9,9 +9,9 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
-  type MembershipRecord
+  type MembershipRecord, useMembershipData
 } from "../hooks/useMembershipData";
-import { type MysqlForm } from "../hooks/useMysqlForms";
+import { type MysqlForm, useMysqlForms } from "../hooks/useMysqlForms";
 import { supabase } from "../lib/supabase";
 import { openLink } from "../utils/openLink";
 
@@ -30,14 +30,29 @@ const MONTH_ABBREVIATIONS = [
   "Dec.",
 ] as const;
 
-const formatWorkshopDate = (value: string | null) => {
-  if (value === null) return null;
-  const date = new Date(value);
+const formatWorkshopDate = (value: string | null): string | null => {
+  if (!value) return null;
+
+  // If it's a plain date like "2026-01-03", parse it safely
+  const dateOnlyMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+
+  const date = dateOnlyMatch
+    ? new Date(Date.UTC(
+        Number(dateOnlyMatch[1]),
+        Number(dateOnlyMatch[2]) - 1,
+        Number(dateOnlyMatch[3]),
+        12, 0, 0 // noon UTC avoids LA shifting into previous day
+      ))
+    : new Date(value);
+
   if (Number.isNaN(date.getTime())) return value;
-  const month = MONTH_ABBREVIATIONS[date.getMonth()];
-  const day = date.getDate();
-  const year = date.getFullYear();
-  return `${month} ${day}, ${year}`;
+
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Los_Angeles",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
 };
 
 const labelFromMysql = (f: MysqlForm) => {
@@ -49,81 +64,19 @@ const labelFromMysql = (f: MysqlForm) => {
   return null;
 };
 
-// Testing Data
-const testForms: MysqlForm[] = [
-  {
-    status: "pre-registered",
-    formid: 3,
-    eventdate: null,
-    prereg: "Off",
-    tld: "org",
-    workshop_name: "Ranching 101",
-    webpage_url: "https://schoolofranch.org/workshops/ranching-101",
-    start_time: "08:00:00",
-    end_time: "17:00:00",
-    memberstatus: null,
-    expirationdate: null,
-    autorenew: null,
-    levelname: null,
-    memberid: null,
-    _tickets: undefined,
-    resolved_url:
-      "https://schoolofranch.org/workshops/ranching-101/details?ref=app",
-    resolved_reason: undefined,
-  },
-  {
-    status: "completed",
-    formid: 5,
-    eventdate: "2024-09-15",
-    prereg: "Off",
-    tld: "org",
-    workshop_name: "Advanced Horsemanship",
-    webpage_url: "https://schoolofranch.org/workshops/advanced-horsemanship",
-    start_time: "09:00:00",
-    end_time: "16:00:00",
-    memberstatus: null,
-    expirationdate: null,
-    autorenew: null,
-    levelname: null,
-    memberid: null,
-    _tickets: undefined,
-    resolved_url:
-      "https://schoolofranch.org/workshops/advanced-horsemanship/details?ref=app",
-    resolved_reason: undefined,
-  },
-];
-
-const testMembershipData: MembershipRecord[] = [
-  {
-    memberid: 12345,
-    memberstatus: "Active",
-    expirationdate: "2025-06-30",
-    autorenew: 1,
-    levelname: "Gold",
-  },
-];
-
 export default function DashboardScreen() {
   const [email, setEmail] = useState<string | null>(null);
 
-  // const {
-  //   data: mysqlForms,
-  //   isLoading: mysqlLoading,
-  //   error: mysqlError,
-  // } = useMysqlForms();
-  // const {
-  //   data: membershipData,
-  //   isLoading: membershipLoading,
-  //   error: membershipError,
-  // } = useMembershipData();
-
-  // Testing data
-  const mysqlForms = testForms;
-  const mysqlLoading = false;
-  const mysqlError = null;
-  const membershipData = testMembershipData;
-  const membershipLoading = false;
-  const membershipError = null;
+  const {
+    data: mysqlForms,
+    isLoading: mysqlLoading,
+    error: mysqlError,
+  } = useMysqlForms();
+  const {
+    data: membershipData,
+    isLoading: membershipLoading,
+    error: membershipError,
+  } = useMembershipData();
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
