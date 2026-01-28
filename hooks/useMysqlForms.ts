@@ -1,0 +1,119 @@
+import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabase";
+
+export type MysqlForm = {
+  status: "completed" | "pre-registered" | string;
+  formid: number;
+  eventdate: string | null;
+  prereg: "On" | "Off";
+  tld: string;
+  workshop_name: string;
+  webpage_url: string;
+  start_time: string;
+  end_time: string;
+
+  memberstatus: string | null;
+  expirationdate: string | null;
+  autorenew: number | null;
+  levelname: string | null;
+  memberid: number | null;
+
+  _tickets?: number;
+  resolved_url: string | undefined;
+  resolved_reason?: "both-404" | "inconclusive" | null;
+};
+
+function safeParse(body: string): any {
+  try {
+    return JSON.parse(body);
+  } catch {
+    return null;
+  }
+}
+
+function isDateInFuture(dateString: string | null): boolean {
+  if (!dateString) return true;
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return false;
+  const now = new Date();
+  return date >= now;
+}
+
+export function useMysqlForms() {
+  const [data, setData] = useState<MysqlForm[]>([]);
+  const [isLoading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      // Check auth first — before the try/catch
+      const { data: sessionData, error: sErr } =
+        await supabase.auth.getSession();
+
+      if (sErr) {
+        console.error("[useMysqlForms] session error:", sErr);
+        setError(sErr.message);
+        setLoading(false);
+        return;
+      }
+
+      const token = sessionData?.session?.access_token;
+
+      // Not logged in → return empty state without error or fetch
+      if (!token) {
+        setData([]);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const base = process.env.EXPO_PUBLIC_SUPABASE_URL;
+        if (!base) throw new Error("EXPO_PUBLIC_SUPABASE_URL missing");
+
+        const endpoint = `${base}/functions/v1/mysql`;
+
+        const res = await fetch(endpoint, {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const ct = res.headers.get("content-type") || "";
+        const raw = await res.text();
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${raw}`);
+        }
+
+        const json = ct.includes("application/json")
+          ? safeParse(raw)
+          : safeParse(raw);
+
+        if (!json) throw new Error("Response was not valid JSON");
+
+        if (Array.isArray(json)) {
+          const filtered = json.filter(
+            (item) =>
+              item.workshop_name !== null &&
+              (item.status === "completed" ||
+                item.status === "pre-registered" ||
+                item.status === "waitlisted") &&
+              isDateInFuture(item.eventdate),
+          );
+
+          setData(filtered as MysqlForm[]);
+        } else if (Array.isArray((json as any).data)) {
+          setData((json as any).data as MysqlForm[]);
+        } else {
+          throw new Error("JSON shape unexpected");
+        }
+      } catch (e: any) {
+        console.error("[useMysqlForms] error:", e);
+        setError(e?.message ?? "Request failed");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  return { data, isLoading, error };
+}
